@@ -17,49 +17,28 @@ input[type="text"], input[type="time"], select {
 }
 input:focus, select:focus { outline: none; border-color: #888; background: #fff; }
 input[type="text"].coord-input { width: 60px !important; min-width: 60px !important; max-width: 60px !important; flex: 0 0 60px !important; margin: 0 !important; padding: 6px 4px !important; text-align: center !important; }
-
 .al-block { background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; margin-bottom: 1rem; overflow: hidden; }
 .al-header { display: flex; align-items: center; gap: 8px; padding: 0.75rem 1rem; background: #f9f9f9; border-bottom: 1px solid #eee; }
 .al-header select { flex: 1; margin: 0; font-size: 15px; font-weight: 600; }
 .al-body { padding: 0.75rem 1rem; }
-
 .time-block { margin-bottom: 0.75rem; }
 .time-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .time-header input[type="time"] { width: 110px; flex-shrink: 0; margin: 0; font-size: 14px; font-weight: 600; }
-
-/* 座標行 */
 .row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
 .coord-input {
-  width: 60px !important;
-  min-width: 60px !important;
-  max-width: 60px !important;
-  flex: 0 0 60px !important;
-  margin: 0;
-  text-transform: uppercase;
-  font-size: 14px;
-  padding: 6px 4px;
-  text-align: center;
-  letter-spacing: 0.05em;
+  width: 60px !important; min-width: 60px !important; max-width: 60px !important;
+  flex: 0 0 60px !important; margin: 0; text-transform: uppercase;
+  font-size: 14px; padding: 6px 4px; text-align: center; letter-spacing: 0.05em;
 }
 .place-box {
-  flex: 1;
-  padding: 6px 10px;
-  font-size: 14px;
-  font-weight: 500;
-  background: #f0f0f0;
-  border-radius: 8px;
-  color: #999;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: 1; padding: 6px 10px; font-size: 14px; font-weight: 500;
+  background: #f0f0f0; border-radius: 8px; color: #999; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .place-box.ok { color: #1a7a3f; background: #eafaf0; }
 .place-box.ng { color: #c0392b; background: #fdecea; font-size: 12px; }
-
 .rm-btn { background: none; border: none; font-size: 16px; cursor: pointer; color: #ccc; padding: 4px 5px; border-radius: 6px; line-height: 1; flex-shrink: 0; }
 .rm-btn:hover { background: #f0f0f0; color: #666; }
-
 .add-coord-btn { font-size: 12px; color: #888; background: none; border: 1px dashed #ccc; border-radius: 6px; padding: 5px 10px; cursor: pointer; width: 100%; margin-top: 2px; margin-bottom: 8px; }
 .add-coord-btn:hover { background: #f5f5f5; }
 .add-time-btn { font-size: 12px; color: #666; background: none; border: 1px dashed #bbb; border-radius: 8px; padding: 6px 10px; cursor: pointer; width: 100%; }
@@ -67,11 +46,9 @@ input[type="text"].coord-input { width: 60px !important; min-width: 60px !import
 .add-al-btn { font-size: 13px; color: #555; background: none; border: 1px dashed #bbb; border-radius: 10px; padding: 10px; cursor: pointer; width: 100%; margin-bottom: 1rem; }
 .add-al-btn:hover { background: #f5f5f5; }
 .time-divider { border: none; border-top: 1px solid #f0f0f0; margin: 8px 0; }
-
 .checklist-toggle { display: flex; align-items: center; gap: 10px; }
 .checklist-toggle input[type="checkbox"] { width: 18px; height: 18px; accent-color: #1a7a3f; cursor: pointer; }
 .checklist-toggle label { font-size: 14px; color: #333; cursor: pointer; margin: 0; }
-
 .submit-btn { width: 100%; padding: 13px; background: #111; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 0.5rem; }
 .submit-btn:hover { background: #333; }
 .submit-btn:disabled { background: #999; cursor: not-allowed; }
@@ -84,16 +61,13 @@ input[type="text"].coord-input { width: 60px !important; min-width: 60px !import
 <body>
 <div class="container">
   <h1>宣戦フォーム</h1>
-
   <div class="card">
     <label>宣戦テキスト</label>
     <input type="text" id="date-label" placeholder="例：明日の宣戦" />
   </div>
-
   <div class="section-title">仲間のチーム</div>
   <div id="alliances"></div>
   <button class="add-al-btn" onclick="addAlliance()">＋ チームを追加</button>
-
   <div class="card">
     <label>投稿者</label>
     <select id="poster">
@@ -112,29 +86,22 @@ input[type="text"].coord-input { width: 60px !important; min-width: 60px !import
       <option value="test">test</option>
     </select>
   </div>
-
   <div class="card">
     <div class="checklist-toggle">
       <input type="checkbox" id="send-checklist" />
       <label for="send-checklist">チェックリストも送る</label>
     </div>
   </div>
-
   <div class="card">
     <label>コメント（任意）</label>
     <textarea id="comment" rows="3" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;color:#111;resize:vertical;font-family:inherit" placeholder="一言メモなど"></textarea>
   </div>
-
   <button class="submit-btn" onclick="submit()">Discordに投稿</button>
   <div class="msg" id="msg"></div>
 </div>
-
 <script src="map.js"></script>
 <script>
-const SENZEN_WEBHOOK = 'https://discord.com/api/webhooks/1492098369126928576/Z2baZZOj_86VrIgO7KaoXult4sxVq9268cyTW9lmxst3EOPScOxwDjKQTaHB7it9lbsU';
-const CHECK_WEBHOOK  = 'https://discord.com/api/webhooks/1492098382410547240/ANAI1y0PHHCJbBaZI-04FnZ5fRKSfYAdo9bmc-jllMf_PYRZbUENzPZ2DDuIugNUstxU';
-
-
+const API_BASE = 'https://translate-production-ca1f.up.railway.app';
 
 const ALLIANCES = ['桃園🍑','楽園🌈','DMS🦋','蒼天⭐️','賓士🚘','猫海😼','秦国⚔️'];
 
@@ -231,7 +198,6 @@ function buildSenzen() {
       lines.push(time);
       tb.querySelectorAll('.row').forEach(row => {
         const coord = row.querySelector('.coord-input').value.toUpperCase().trim();
-        const placeBox = row.querySelector('.place-box');
         const placeInput = row.querySelector('.place-input');
         const place = MAP[coord] || (placeInput && placeInput.style.display !== 'none' ? placeInput.value.trim() : '');
         const note = row.querySelector('input[id^="note-"]');
@@ -279,8 +245,8 @@ function buildChecklist() {
   return lines.join('\n').trim();
 }
 
-async function post(url, content) {
-  const res = await fetch(url, {
+async function post(type, content) {
+  const res = await fetch(`${API_BASE}/${type}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content })
@@ -295,9 +261,9 @@ async function submit() {
   btn.textContent = '投稿中…';
   msg.textContent = '';
   try {
-    await post(SENZEN_WEBHOOK, buildSenzen());
+    await post('senzen', buildSenzen());
     if (document.getElementById('send-checklist').checked) {
-      await post(CHECK_WEBHOOK, buildChecklist());
+      await post('check', buildChecklist());
     }
     msg.textContent = '投稿しました！';
     msg.className = 'msg ok';
