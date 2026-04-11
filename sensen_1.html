@@ -56,6 +56,17 @@ input[type="text"].coord-input { width: 60px !important; min-width: 60px !import
 .msg.ok { color: #1a7a3f; }
 .msg.err { color: #c0392b; }
 .section-title { font-size: 13px; font-weight: 600; color: #888; margin-bottom: 8px; }
+.coord-dropdown {
+  position: absolute; z-index: 100; background: #fff;
+  border: 1px solid #ddd; border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-height: 200px; overflow-y: auto; min-width: 160px;
+  top: 100%; left: 0;
+}
+.coord-dropdown-item {
+  padding: 8px 12px; font-size: 14px; cursor: pointer;
+}
+.coord-dropdown-item:hover { background: #f5f5f5; }
 </style>
 </head>
 <body>
@@ -154,14 +165,16 @@ function addCoord(tId) {
   div.className = 'row';
   div.id = `coord-${cId}`;
   div.innerHTML = `
-    <div style="display:flex;gap:6px;align-items:center;width:100%">
-      <input class="coord-input" type="text" maxlength="4" placeholder="D30"
-        oninput="lookup(this,'pl-${cId}','plinput-${cId}')" />
-      <div class="place-box" id="pl-${cId}">—</div>
-      <input type="text" class="place-input" id="plinput-${cId}" placeholder="地名を入力" style="display:none;flex:1;margin:0;padding:6px 8px;font-size:14px;border:1px solid #ddd;border-radius:8px;background:#fafafa;" />
-      <button class="rm-btn" onclick="document.getElementById('coord-${cId}').remove()">×</button>
+    <div style="display:flex;flex-direction:column;width:100%;gap:4px;">
+      <div style="display:flex;gap:6px;align-items:center;position:relative;">
+        <input class="coord-input" type="text" maxlength="4" placeholder="D30"
+          oninput="lookup(this,'pl-${cId}','plinput-${cId}')" />
+        <div class="place-box" id="pl-${cId}">—</div>
+        <input type="text" class="place-input" id="plinput-${cId}" placeholder="地名を入力" style="display:none;flex:1;margin:0;padding:6px 8px;font-size:14px;border:1px solid #ddd;border-radius:8px;background:#fafafa;" />
+        <button class="rm-btn" onclick="document.getElementById('coord-${cId}').remove()">×</button>
+      </div>
+      <input type="text" id="note-${cId}" placeholder="コメント（任意）" style="width:100%;padding:5px 8px;font-size:12px;border:1px solid #ddd;border-radius:8px;background:#fafafa;color:#666;" />
     </div>
-    <input type="text" id="note-${cId}" placeholder="コメント（任意）" style="width:100%;margin-top:4px;padding:5px 8px;font-size:12px;border:1px solid #ddd;border-radius:8px;background:#fafafa;color:#666;" />
   `;
   document.getElementById(`coords-${tId}`).appendChild(div);
 }
@@ -171,18 +184,55 @@ function lookup(input, plId, inputId) {
   input.value = v;
   const el = document.getElementById(plId);
   const inp = document.getElementById(inputId);
+
+  // 既存のドロップダウンを消す
+  const existingDD = input.parentElement.querySelector('.coord-dropdown');
+  if (existingDD) existingDD.remove();
+
   if (!v) {
     el.textContent = '—'; el.className = 'place-box'; el.style.display = '';
     inp.style.display = 'none'; return;
   }
+
+  // 完全一致
   if (MAP[v]) {
     el.textContent = MAP[v]; el.className = 'place-box ok'; el.style.display = '';
+    inp.style.display = 'none'; return;
+  }
+
+  // 前方一致で候補を出す
+  const hits = Object.keys(MAP).filter(k => k.startsWith(v));
+  if (hits.length > 0) {
+    const dd = document.createElement('div');
+    dd.className = 'coord-dropdown';
+    hits.forEach(k => {
+      const item = document.createElement('div');
+      item.className = 'coord-dropdown-item';
+      item.textContent = `${k}　${MAP[k]}`;
+      item.onmousedown = () => {
+        input.value = k;
+        el.textContent = MAP[k]; el.className = 'place-box ok'; el.style.display = '';
+        inp.style.display = 'none';
+        dd.remove();
+      };
+      dd.appendChild(item);
+    });
+    input.parentElement.appendChild(dd);
+    el.style.display = 'none';
     inp.style.display = 'none';
   } else {
+    // 候補なし→手入力モード
     el.style.display = 'none';
     inp.style.display = 'block';
   }
 }
+
+// 外クリックでドロップダウンを閉じる
+document.addEventListener('mousedown', e => {
+  if (!e.target.closest('.coord-dropdown') && !e.target.classList.contains('coord-input')) {
+    document.querySelectorAll('.coord-dropdown').forEach(d => d.remove());
+  }
+});
 
 function buildSenzen() {
   const label = document.getElementById('date-label').value.trim() || '明日の宣戦';
@@ -276,6 +326,7 @@ async function submit() {
   setTimeout(() => msg.textContent = '', 4000);
 }
 
+// 日付の自動設定（日本時間12時以降なら翌日、それ以前なら当日）
 const DAYS = ["日","月","火","水","木","金","土"];
 const jstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
 const jstHour = jstNow.getHours();
@@ -284,6 +335,7 @@ if (jstHour >= 12) target.setDate(target.getDate() + 1);
 const label = jstHour >= 12 ? "明日" : "今日";
 const tmrStr = `${label}の宣戦（${target.getMonth()+1}/${target.getDate()}・${DAYS[target.getDay()]}）`;
 document.getElementById("date-label").value = tmrStr;
+
 addAlliance();
 </script>
 </body>
