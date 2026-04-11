@@ -110,7 +110,7 @@ const nid = () => uid++;
 
 function addAlliance() {
   const alId = nid();
-  const opts = ALLIANCES.map(a => `<option value="${a}">${a}</option>`).join('');
+  const opts = `<option value="" disabled selected>選択してください</option>` + ALLIANCES.map(a => `<option value="${a}">${a}</option>`).join('');
   const div = document.createElement('div');
   div.className = 'al-block';
   div.id = `al-${alId}`;
