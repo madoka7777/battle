@@ -277,8 +277,12 @@ async function submit() {
 }
 
 const DAYS = ["日","月","火","水","木","金","土"];
-const tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
-const tmrStr = `明日の宣戦（${tmr.getMonth()+1}/${tmr.getDate()}・${DAYS[tmr.getDay()]}）`;
+const jstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+const jstHour = jstNow.getHours();
+const target = new Date(jstNow);
+if (jstHour >= 12) target.setDate(target.getDate() + 1);
+const label = jstHour >= 12 ? "明日" : "今日";
+const tmrStr = `${label}の宣戦（${target.getMonth()+1}/${target.getDate()}・${DAYS[target.getDay()]}）`;
 document.getElementById("date-label").value = tmrStr;
 addAlliance();
 </script>
