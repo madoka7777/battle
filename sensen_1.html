@@ -67,6 +67,7 @@ input[type="text"].coord-input { width: 60px !important; min-width: 60px !import
   padding: 8px 12px; font-size: 14px; cursor: pointer;
 }
 .coord-dropdown-item:hover { background: #f5f5f5; }
+.test-mode-card { border-color: #f5c842; background: #fffde7; }
 </style>
 </head>
 <body>
@@ -101,6 +102,12 @@ input[type="text"].coord-input { width: 60px !important; min-width: 60px !import
     <div class="checklist-toggle">
       <input type="checkbox" id="send-checklist" />
       <label for="send-checklist">チェックリストも送る</label>
+    </div>
+  </div>
+  <div class="card test-mode-card">
+    <div class="checklist-toggle">
+      <input type="checkbox" id="test-mode" />
+      <label for="test-mode">🧪 テストモード</label>
     </div>
   </div>
   <div class="card">
@@ -185,7 +192,6 @@ function lookup(input, plId, inputId) {
   const el = document.getElementById(plId);
   const inp = document.getElementById(inputId);
 
-  // 既存のドロップダウンを消す
   const existingDD = input.parentElement.querySelector('.coord-dropdown');
   if (existingDD) existingDD.remove();
 
@@ -194,13 +200,11 @@ function lookup(input, plId, inputId) {
     inp.style.display = 'none'; return;
   }
 
-  // 完全一致
   if (MAP[v]) {
     el.textContent = MAP[v]; el.className = 'place-box ok'; el.style.display = '';
     inp.style.display = 'none'; return;
   }
 
-  // 前方一致で候補を出す
   const hits = Object.keys(MAP).filter(k => k.startsWith(v));
   if (hits.length > 0) {
     const dd = document.createElement('div');
@@ -221,13 +225,11 @@ function lookup(input, plId, inputId) {
     el.style.display = 'none';
     inp.style.display = 'none';
   } else {
-    // 候補なし→手入力モード
     el.style.display = 'none';
     inp.style.display = 'block';
   }
 }
 
-// 外クリックでドロップダウンを閉じる
 document.addEventListener('mousedown', e => {
   if (!e.target.closest('.coord-dropdown') && !e.target.classList.contains('coord-input')) {
     document.querySelectorAll('.coord-dropdown').forEach(d => d.remove());
@@ -296,7 +298,9 @@ function buildChecklist() {
 }
 
 async function post(type, content) {
-  const res = await fetch(`${API_BASE}/${type}`, {
+  const isTest = document.getElementById('test-mode').checked;
+  const endpoint = isTest ? `${type}-test` : type;
+  const res = await fetch(`${API_BASE}/${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content })
@@ -307,6 +311,7 @@ async function post(type, content) {
 async function submit() {
   const btn = document.querySelector('.submit-btn');
   const msg = document.getElementById('msg');
+  const isTest = document.getElementById('test-mode').checked;
   btn.disabled = true;
   btn.textContent = '投稿中…';
   msg.textContent = '';
@@ -315,7 +320,7 @@ async function submit() {
     if (document.getElementById('send-checklist').checked) {
       await post('check', buildChecklist());
     }
-    msg.textContent = '投稿しました！';
+    msg.textContent = isTest ? '🧪 テスト投稿しました！' : '投稿しました！';
     msg.className = 'msg ok';
   } catch(e) {
     msg.textContent = 'エラーが発生しました';
@@ -326,7 +331,6 @@ async function submit() {
   setTimeout(() => msg.textContent = '', 4000);
 }
 
-// 日付の自動設定（日本時間12時以降なら翌日、それ以前なら当日）
 const DAYS = ["日","月","火","水","木","金","土"];
 const jstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
 const jstHour = jstNow.getHours();
